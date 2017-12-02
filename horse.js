@@ -5,7 +5,6 @@ function Horse() {
     this.jumping = false;
     this.jump_height = 0;
     this.jump_ascending;
-    this.last_jump = 0;
 }
 
 Horse.prototype = {
@@ -29,10 +28,10 @@ Horse.prototype = {
     jump_step: function() {
         return (this.jump_max_height * 1.5 - this.jump_height) * 0.5;
     },
-    jump_max_height: 80,
-    jump_repeating: 800,
+    gravity: 20,
+    jump_max_height: 100,
     jump: function() {
-        if (!this.jumping && (Date.now() - this.last_jump > this.jump_repeating)) {
+        if (!this.jumping) {
             this.last_jump = Date.now();
             horse.jumping = true;
             horse.jump_ascending = true;
@@ -51,7 +50,7 @@ Horse.prototype = {
         } else {
             this.current_frame = (this.current_frame + 1) % this.frames.length;
         }
-        this.jump_height -= 15;
+        this.jump_height -= this.gravity;
         if (this.jump_height < 0) {
             this.jumping = false;
             this.jump_height = 0;

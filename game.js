@@ -9,10 +9,20 @@ document.body.appendChild(canvas);
 let horse = new Horse();
 let skeleton = new Skeleton();
 
+let pressedKeys = {};
+
 document.addEventListener('keydown', e => {
+    if (pressedKeys[e.keyCode]) {
+        return; // disable automatic key repetition
+    }
+    pressedKeys[e.keyCode] = true;
     if (e.keyCode == 32) {
         horse.jump();
     }
+});
+
+document.addEventListener('keyup', e => {
+    pressedKeys[e.keyCode] = false;
 });
 
 (function update() {
