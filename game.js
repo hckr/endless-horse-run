@@ -86,6 +86,7 @@ function newGame() {
 
     (function updateBackground() {
         if (!gameOver) {
+            updateGround();
             updateTrees(difficulty);
             if (difficulty < 1) {
                 difficulty += 0.0001;
@@ -98,7 +99,6 @@ function newGame() {
         ctx.fillStyle = '#81738e';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        drawBackGround(ctx);
         drawGround(ctx);
 
         for (let x of [horse, ...skeletons]) {

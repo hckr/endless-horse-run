@@ -3,23 +3,13 @@ backgroundImage.src = 'assets/forest.png';
 
 const groundHeight = 30;
 
-function drawGround(ctx) {
-    let canvasWidth = ctx.canvas.width,
-        canvasHeight = ctx.canvas.height;
+let groundOffsetX = 0;
 
-    let spriteX = 230,
-        spriteY = 54,
-        spriteWidth = 30,
-        spriteHeight = 30,
-        width = 30,
-        height = 30;
-
-    for (let offsetX = 0; offsetX < canvasWidth; offsetX += width) {
-        ctx.drawImage(backgroundImage, spriteX, spriteY, spriteWidth, spriteHeight, offsetX, canvasHeight - height, width, height);
-    }
+function updateGround() {
+    groundOffsetX = (groundOffsetX - 2) % 1920; // least common multiple of 128 and 30
 }
 
-function drawBackGround(ctx) {
+function drawGround(ctx) {
     let canvasWidth = ctx.canvas.width,
         canvasHeight = ctx.canvas.height;
 
@@ -29,9 +19,9 @@ function drawBackGround(ctx) {
             spriteWidth = 128,
             spriteHeight = 85,
             width = 128,
-            height = 95 ;
+            height = 95;
 
-        for (let offsetX = 0; offsetX < canvasWidth; offsetX += width) {
+        for (let offsetX = Math.ceil((groundOffsetX * 0.2) % width); offsetX < canvasWidth; offsetX += width) {
             ctx.drawImage(backgroundImage, spriteX, spriteY, spriteWidth, spriteHeight, offsetX, canvasHeight - groundHeight - 70 - height, width, height);
         }
     }
@@ -41,10 +31,22 @@ function drawBackGround(ctx) {
             spriteWidth = 128,
             spriteHeight = 85,
             width = 128,
-            height = 85 ;
+            height = 85;
 
-        for (let offsetX = 0; offsetX < canvasWidth; offsetX += width) {
+        for (let offsetX = Math.ceil((groundOffsetX * 0.6) % width); offsetX < canvasWidth; offsetX += width) {
             ctx.drawImage(backgroundImage, spriteX, spriteY, spriteWidth, spriteHeight, offsetX, canvasHeight - groundHeight - height + 10, width, height);
+        }
+    }
+    {
+        let spriteX = 230,
+            spriteY = 54,
+            spriteWidth = 30,
+            spriteHeight = 30,
+            width = 30,
+            height = 30;
+
+        for (let offsetX = groundOffsetX % width; offsetX < canvasWidth; offsetX += width) {
+            ctx.drawImage(backgroundImage, spriteX, spriteY, spriteWidth, spriteHeight, offsetX, canvasHeight - height, width, height);
         }
     }
 }
