@@ -9,8 +9,20 @@ document.body.appendChild(canvas);
 function newGame() {
     let gameOver = false;
 
-    let horse = new Horse(200, 300);
-    let skeletons = [];
+    const groundPosY = canvas.height - groundHeight;
+
+    let horse = new Horse(100, groundPosY),
+        skeletons = [],
+        last_skeleton_added = 0,
+        difficulty = 0;
+
+    function restartGame() {
+        skeletons = [];
+        horse.restart();
+        last_skeleton_added = Date.now();
+        gameOver = false;
+        difficulty = 0;
+    }
 
     let pressedKeys = {};
 
@@ -35,14 +47,6 @@ function newGame() {
     }
     document.addEventListener('keyup', keyUpListener);
 
-    function restartGame() {
-        skeletons = [];
-        horse.restart();
-        gameOver = false;
-    }
-
-    let last_skeleton_added = 0;
-
     function checkCollision(first, second) {
         let rect1 = first.collisionRect(),
             rect2 = second.collisionRect();
@@ -60,7 +64,7 @@ function newGame() {
         if (!gameOver) {
             if (Date.now() - last_skeleton_added > 1200) {
                 if (Math.random() > 0.6) {
-                    skeletons.push(new Skeleton(canvas.width, 300));
+                    skeletons.push(new Skeleton(canvas.width, groundPosY));
                 }
                 last_skeleton_added = Date.now();
             }
@@ -80,14 +84,32 @@ function newGame() {
         setTimeout(update, 50);
     })();
 
+    (function updateBackground() {
+        if (!gameOver) {
+            updateTrees(difficulty);
+            if (difficulty < 1) {
+                difficulty += 0.0001;
+            }
+        }
+        setTimeout(updateBackground, 20);
+    })();
+
     (function draw() {
-        ctx.fillStyle = 'magenta';
-        ctx.strokeStyle = 'cyan';
+        ctx.fillStyle = '#81738e ';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        drawBackGround(ctx);
+        drawGround(ctx);
 
         for (let x of [horse, ...skeletons]) {
             x.drawOn(ctx);
         }
+
+        drawTrees(ctx);
+
+        ctx.fillStyle = 'white';
+        ctx.font = '16px monospace';
+        ctx.fillText(`Difficulty: ${Math.round(difficulty * 100)}%`, 10, 20);
 
         requestAnimationFrame(draw);
     })();
