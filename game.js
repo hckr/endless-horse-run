@@ -6,8 +6,8 @@ canvas.height = 600;
 
 document.body.appendChild(canvas);
 
-let horse = new Horse();
-let skeleton = new Skeleton();
+let horse = new Horse(200, 300);
+let skeletons = [];
 
 let pressedKeys = {};
 
@@ -16,18 +16,32 @@ document.addEventListener('keydown', e => {
         return; // disable automatic key repetition
     }
     pressedKeys[e.keyCode] = true;
+
     if (e.keyCode == 32) {
-        horse.jump();
+        horse.startJump();
     }
 });
 
 document.addEventListener('keyup', e => {
     pressedKeys[e.keyCode] = false;
+
+    if (e.keyCode == 32) {
+        horse.endJump();
+    }
 });
+
+let last_skeleton_added = 0;
 
 (function update() {
     horse.update();
-    skeleton.update();
+    skeletons = skeletons.filter(s => s.pos_x > -100);
+    if (Date.now() - last_skeleton_added > 1200) {
+        if (Math.random() > 0.6) {
+            skeletons.push(new Skeleton(canvas.width, 300));
+        }
+        last_skeleton_added = Date.now();
+    }
+    skeletons.forEach(s => s.update());
     setTimeout(update, 50);
 })();
 
@@ -36,13 +50,9 @@ document.addEventListener('keyup', e => {
     ctx.strokeStyle = 'cyan';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    let h_frame = horse.frames[horse.current_frame];
-    ctx.drawImage(horse.image, h_frame.left, h_frame.top, horse.width, horse.height, 100, 200 - horse.jump_height, horse.width, horse.height);
-    ctx.strokeRect(100, 200, horse.width, horse.height);
-
-    let s_frame = skeleton.frames[skeleton.current_frame];
-    ctx.drawImage(skeleton.image, s_frame.left, s_frame.top, skeleton.width, skeleton.height, 300, 200 + 11, skeleton.width * skeleton.scale_factor, skeleton.height * skeleton.scale_factor);
-    ctx.strokeRect(300, 200 + 11, skeleton.width * skeleton.scale_factor, skeleton.height * skeleton.scale_factor);
+    for (let x of [horse, ...skeletons]) {
+        x.drawOn(ctx);
+    }
 
     requestAnimationFrame(draw);
 })();
