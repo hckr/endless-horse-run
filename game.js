@@ -4,7 +4,8 @@ let canvas = document.createElement('canvas'),
 canvas.width = 800;
 canvas.height = 300;
 
-document.body.appendChild(canvas);
+let container = document.getElementById('game-container');
+container.insertBefore(canvas, container.firstChild);
 
 function newGame() {
     let gameOver = false;
@@ -118,7 +119,7 @@ function newGame() {
             ctx.fillStyle = 'rgb(138, 7, 7)';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.font = '64px "Droid Sans"';
+            ctx.font = '64px "Open Sans"';
             ctx.fillText('YOU LOST', canvas.width / 2, canvas.height / 2);
             ctx.strokeStyle = 'white';
             ctx.lineWidth = 2;
