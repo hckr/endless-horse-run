@@ -1,4 +1,5 @@
 body, html {
+    margin: 0;
     height: 100%;
     display: grid;
     font: 14px "Open Sans";
