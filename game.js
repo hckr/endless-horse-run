@@ -32,6 +32,19 @@ document.addEventListener('keyup', e => {
 
 let last_skeleton_added = 0;
 
+function checkCollision(first, second) {
+    let rect1 = first.collisionRect(),
+        rect2 = second.collisionRect();
+
+    // https://developer.mozilla.org/kab/docs/Games/Techniques/2D_collision_detection#Axis-Aligned_Bounding_Box
+    return rect1.x < rect2.x + rect2.width &&
+           rect1.x + rect1.width > rect2.x &&
+           rect1.y < rect2.y + rect2.height &&
+           rect1.height + rect1.y > rect2.y;
+}
+
+// skeletons.push(new Skeleton(canvas.width, 300));
+
 (function update() {
     horse.update();
     skeletons = skeletons.filter(s => s.pos_x > -100);
@@ -41,7 +54,13 @@ let last_skeleton_added = 0;
         }
         last_skeleton_added = Date.now();
     }
-    skeletons.forEach(s => s.update());
+    skeletons.forEach(s => {
+        s.update();
+        if (checkCollision(horse, s)) {
+            s.attack();
+            horse.stop();
+        }
+    });
     setTimeout(update, 50);
 })();
 

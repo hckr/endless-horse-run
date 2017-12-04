@@ -44,17 +44,21 @@ Horse.prototype = {
         }
     },
     update: function() {
-        if (this.jumping) {
-            this.current_frame = this.jump_freeze_frame;
-            if (this.jump_ascending) {
-                if (this.jump_height < this.jump_max_height) {
-                    this.jump_height += this.jump_step();
-                } else {
-                    this.jump_ascending = false;
+        if (!this.stopped) {
+            if (this.jumping) {
+                this.current_frame = this.jump_freeze_frame;
+                if (this.jump_ascending) {
+                    if (this.jump_height < this.jump_max_height) {
+                        this.jump_height += this.jump_step();
+                    } else {
+                        this.jump_ascending = false;
+                    }
                 }
+            } else {
+                this.current_frame = (this.current_frame + 1) % this.frames.length;
             }
         } else {
-            this.current_frame = (this.current_frame + 1) % this.frames.length;
+            this.current_frame = 4;
         }
         this.jump_height -= this.gravity;
         if (this.jump_height < 0) {
@@ -66,5 +70,17 @@ Horse.prototype = {
     drawOn: function(ctx) {
         let frame = this.frames[this.current_frame];
         ctx.drawImage(this.image, frame.left, frame.top, this.width, this.height, this.pos_x, this.pos_y, this.width, this.height);
+    },
+    collisionRect: function() {
+        return {
+            x: this.pos_x + 20,
+            y: this.pos_y,
+            width: this.width - 20,
+            height: this.height - 10
+        };
+    },
+    stopped: false,
+    stop: function() {
+        this.stopped = true;
     }
 }
