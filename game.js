@@ -103,8 +103,8 @@ function newGame() {
 
     (function updateBackground() {
         if (!gameOver && !gamePaused) {
-            updateGround();
-            updateTrees(difficulty);
+            updateGroundAndBackTrees(difficulty);
+            updateForeTrees(difficulty);
             if (difficulty < 1) {
                 difficulty += 0.0001;
             }
@@ -116,13 +116,13 @@ function newGame() {
         ctx.fillStyle = '#81738e';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        drawGround(ctx);
+        drawGroundAndBackTrees(ctx);
 
         for (let x of [horse, ...skeletons]) {
             x.drawOn(ctx);
         }
 
-        drawTrees(ctx);
+        drawForeTrees(ctx);
 
         ctx.fillStyle = 'white';
         ctx.font = '16px monospace';

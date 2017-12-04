@@ -1,6 +1,13 @@
 body, html {
     margin: 0;
     height: 100%;
+}
+
+html {
+    background: #ecdef8;
+}
+
+body {
     display: grid;
     font: 14px "Open Sans";
 }
