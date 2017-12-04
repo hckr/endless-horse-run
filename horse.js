@@ -7,6 +7,7 @@ function Horse(start_left, start_bottom) {
     this.jump_ascending;
     this.pos_x = start_left;
     this.initial_pos_y = start_bottom - this.height;
+    this.stopped = false;
 }
 
 Horse.prototype = {
@@ -33,7 +34,7 @@ Horse.prototype = {
     gravity: 8,
     jump_max_height: 110,
     startJump: function() {
-        if (!this.jumping) {
+        if (!this.jumping && !this.stopped) {
             this.jumping = true;
             this.jump_ascending = true;
         }
@@ -73,14 +74,16 @@ Horse.prototype = {
     },
     collisionRect: function() {
         return {
-            x: this.pos_x + 20,
+            x: this.pos_x + 35,
             y: this.pos_y,
-            width: this.width - 20,
+            width: this.width - 35,
             height: this.height - 10
         };
     },
-    stopped: false,
     stop: function() {
         this.stopped = true;
+    },
+    restart: function() {
+        this.stopped = false;
     }
 }

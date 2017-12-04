@@ -10,6 +10,8 @@ function Skeleton(start_left, start_bottom) {
     this.pos_x = start_left;
     this.pos_y = start_bottom - this.effective_height;
     this.speed = Math.random() * 2 + 9;
+    this.stopped = false;
+    this.attacking = false;
 }
 
 Skeleton.prototype = {
@@ -54,16 +56,18 @@ Skeleton.prototype = {
         // { top: 0, left: 731 },
     ],
     update: function() {
-        this.inner_counter += 1;
-        if (this.inner_counter % 2 == 0) {
-            this.inner_counter = 0;
-            this.current_frame = this.current_frame - 1;
-            if (this.current_frame < 0) {
-                this.current_frame += this.frames.length;
+        if (!this.stopped || this.attacking) {
+            this.inner_counter += 1;
+            if (this.inner_counter % 2 == 0) {
+                this.inner_counter = 0;
+                this.current_frame = this.current_frame - 1;
+                if (this.current_frame < 0) {
+                    this.current_frame += this.frames.length;
+                }
             }
-        }
-        if (!this.attacking) {
-            this.pos_x -= this.speed;
+            if (!this.attacking) {
+                this.pos_x -= this.speed;
+            }
         }
     },
     drawOn: function(ctx) {
@@ -92,5 +96,8 @@ Skeleton.prototype = {
             this.inner_counter = 0;
             this.current_frame = 0;
         }
+    },
+    stop: function() {
+        this.stopped = true;
     }
 }
