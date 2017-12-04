@@ -95,7 +95,7 @@ function newGame() {
     })();
 
     (function draw() {
-        ctx.fillStyle = '#81738e ';
+        ctx.fillStyle = '#81738e';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         drawBackGround(ctx);
@@ -110,6 +110,21 @@ function newGame() {
         ctx.fillStyle = 'white';
         ctx.font = '16px monospace';
         ctx.fillText(`Difficulty: ${Math.round(difficulty * 100)}%`, 10, 20);
+
+        if (gameOver) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(138, 7, 7, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgb(138, 7, 7)';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = '64px "Droid Sans"';
+            ctx.fillText('YOU LOST', canvas.width / 2, canvas.height / 2);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.strokeText('YOU LOST', canvas.width / 2, canvas.height / 2);
+            ctx.restore();
+        }
 
         requestAnimationFrame(draw);
     })();
