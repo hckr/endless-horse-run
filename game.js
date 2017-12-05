@@ -112,8 +112,8 @@ function newGame() {
             horse.update();
             skeletons = skeletons.filter(s => s.pos_x > -100);
             if (!gameOver) {
-                if (Date.now() - lastSkeletonAdded > 1200) {
-                    if (Math.random() > 0.6) {
+                if (Date.now() - lastSkeletonAdded > 1700) {
+                    if (Math.random() > 0.5) {
                         skeletons.push(new Skeleton(canvas.width, groundPosY));
                     }
                     lastSkeletonAdded = Date.now();

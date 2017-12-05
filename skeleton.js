@@ -5,11 +5,11 @@ function Skeleton(start_left, start_bottom) {
     this.image_attack.src = this.file_attack;
     this.inner_counter = 0;
     this.current_frame = this.frames.length - 1;
-    this.effective_width = Math.floor(this.width * this.scale_factor);
-    this.effective_height = Math.floor(this.height * this.scale_factor);
+    this.effective_width = (this.width * this.scale_factor) | 0;
+    this.effective_height = (this.height * this.scale_factor) | 0;
     this.pos_x = start_left;
     this.pos_y = start_bottom - this.effective_height;
-    this.speed = Math.random() * 2 + 9;
+    this.speed = Math.random() * 2 + 8;
     this.stopped = false;
     this.attacking = false;
 }
@@ -72,12 +72,12 @@ Skeleton.prototype = {
     },
     drawOn: function(ctx) {
         let frame = this.frames[this.current_frame];
-        ctx.drawImage(this.image, frame.left, frame.top, this.width, this.height, this.pos_x, this.pos_y, this.effective_width, this.effective_height);
+        ctx.drawImage(this.image, frame.left, frame.top, this.width, this.height, this.pos_x | 0, this.pos_y | 0, this.effective_width, this.effective_height);
     },
     collisionRect: function() {
         return {
-            x: this.pos_x,
-            y: this.pos_y,
+            x: this.pos_x | 0,
+            y: this.pos_y | 0,
             width: this.effective_width,
             height: this.effective_height
         };
@@ -90,8 +90,8 @@ Skeleton.prototype = {
             this.pos_x -= 21;
             this.height = 37;
             this.pos_y -= 3;
-            this.effective_width = Math.floor(this.width * this.scale_factor);
-            this.effective_height = Math.floor(this.height * this.scale_factor);
+            this.effective_width = (this.width * this.scale_factor) | 0;
+            this.effective_height = (this.height * this.scale_factor) | 0;
             this.frames = this.frames_attack;
             this.inner_counter = 0;
             this.current_frame = 0;

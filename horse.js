@@ -70,12 +70,12 @@ Horse.prototype = {
     },
     drawOn: function(ctx) {
         let frame = this.frames[this.current_frame];
-        ctx.drawImage(this.image, frame.left, frame.top, this.width, this.height, this.pos_x, this.pos_y, this.width, this.height);
+        ctx.drawImage(this.image, frame.left, frame.top, this.width, this.height, this.pos_x | 0, this.pos_y | 0, this.width, this.height);
     },
     collisionRect: function() {
         return {
-            x: this.pos_x + 35,
-            y: this.pos_y,
+            x: (this.pos_x | 0) + 35,
+            y: this.pos_y | 0,
             width: this.width - 35,
             height: this.height - 10
         };

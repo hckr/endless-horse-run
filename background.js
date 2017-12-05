@@ -7,8 +7,8 @@ function prepareTreeDraw(spriteInfo) {
     let canvas = document.createElement('canvas'),
         ctx = canvas.getContext('2d');
 
-    canvas.width = Math.floor(spriteInfo.width);
-    canvas.height = Math.floor(spriteInfo.height);
+    canvas.width = spriteInfo.width | 0;
+    canvas.height = spriteInfo.height | 0;
 
     ctx.drawImage(backgroundImage, spriteInfo.spriteX, spriteInfo.spriteY, spriteInfo.spriteWidth, spriteInfo.spriteHeight, 0, 0, canvas.width, canvas.height);
 
