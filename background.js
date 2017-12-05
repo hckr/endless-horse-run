@@ -34,7 +34,7 @@ function updateForeTrees(difficulty) {
     for (let tree of foreTrees) {
         tree.left -= 2.5;
     }
-    foreTrees.filter(t => t.left > -t.sprite.width);
+    foreTrees = foreTrees.filter(t => t.left > -t.sprite.width);
     let lastTree = foreTrees[foreTrees.length - 1];
     if ((lastTree.left + lastTree.sprite.width) < (750 + 200 * difficulty) && Math.random() < 0.15) {
         foreTrees.push({ left: 800, bottom: -50, front: Math.random() < 0.5, sprite: Math.random() < 0.5 ? firstForeTree : secondForeTree });
@@ -90,7 +90,7 @@ function updateGroundAndBackTrees(difficulty  ) {
     for (let tree of backTrees) {
         tree.left -= 1.8;
     }
-    backTrees.filter(t => t.left > -t.sprite.width);
+    backTrees = backTrees.filter(t => t.left > -t.sprite.width);
     let lastTree = backTrees[backTrees.length - 1];
     if ((lastTree.left + lastTree.sprite.width) < (750 + 200 * difficulty) && Math.random() < 0.15) {
         backTrees.push({ left: 800, bottom: 30, front: Math.random() < 0.5, sprite: Math.random() < 0.5 ? firstBackTree : secondBackTree });
