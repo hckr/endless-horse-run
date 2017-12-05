@@ -16,6 +16,10 @@ body {
     margin: auto;
 }
 
+canvas {
+    max-width: 100%;
+}
+
 .credits {
     text-align: center;
     margin: 10px;

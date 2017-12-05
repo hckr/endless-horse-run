@@ -7,6 +7,22 @@ canvas.height = 300;
 let container = document.getElementById('game-container');
 container.insertBefore(canvas, container.firstChild);
 
+function isTouchDevice() {
+    return 'ontouchstart' in window || navigator.maxTouchPoints;
+}
+
+let controlsHints = {};
+
+if (isTouchDevice()) {
+    controlsHints['jump'] = "Touch and hold to jump, release to land.";
+    controlsHints['pause'] = "Double tap to toggle pause.";
+    controlsHints['unpause'] = "Double tap to continue.";
+} else {
+    controlsHints['jump'] = "Hold spacebar to jump, release to land.";
+    controlsHints['pause'] = "Press P to toggle pause.";
+    controlsHints['unpause'] = "Press P to continue.";
+}
+
 function newGame() {
     let gameOver = false,
         gamePaused = false,
@@ -16,13 +32,13 @@ function newGame() {
 
     let horse = new Horse(100, groundPosY),
         skeletons = [],
-        last_skeleton_added = 0,
+        lastSkeletonAdded = 0,
         difficulty = 0;
 
     function restartGame() {
         skeletons = [];
         horse.restart();
-        last_skeleton_added = Date.now();
+        lastSkeletonAdded = Date.now() + 5000; // give some time before the first enemy to appear
         gameOver = false;
         difficulty = 0;
     }
@@ -49,6 +65,20 @@ function newGame() {
     }
     document.addEventListener('keydown', keyDownListener);
 
+    let firstTouchStart = 0;
+    canvas.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (!gameOver) {
+            if (Date.now() - firstTouchStart < 300) {
+                gamePaused = !gamePaused;
+            } else {
+                firstTouchStart = Date.now();
+                horse.startJump();
+                showControlsHint = false;
+            }
+        }
+    });
+
     function keyUpListener(e) {
         pressedKeys[e.keyCode] = false;
 
@@ -57,6 +87,10 @@ function newGame() {
         }
     }
     document.addEventListener('keyup', keyUpListener);
+
+    canvas.addEventListener('touchend', _ => {
+        horse.endJump();
+    });
 
     window.onblur = function() {
         gamePaused = true;
@@ -78,11 +112,11 @@ function newGame() {
             horse.update();
             skeletons = skeletons.filter(s => s.pos_x > -100);
             if (!gameOver) {
-                if (Date.now() - last_skeleton_added > 1200) {
+                if (Date.now() - lastSkeletonAdded > 1200) {
                     if (Math.random() > 0.6) {
                         skeletons.push(new Skeleton(canvas.width, groundPosY));
                     }
-                    last_skeleton_added = Date.now();
+                    lastSkeletonAdded = Date.now();
                 }
             }
             skeletons.forEach(s => {
@@ -128,7 +162,7 @@ function newGame() {
         ctx.font = '16px monospace';
         ctx.fillText(`Difficulty: ${Math.round(difficulty * 100)}%`, 10, 20);
 
-        if (showControlsHint && !gameOver && !gamePaused) {
+        if (showControlsHint) {
             ctx.save();
             ctx.fillStyle = 'white';
             ctx.textAlign = 'center';
@@ -136,8 +170,8 @@ function newGame() {
             ctx.font = '28px "Open Sans"';
             let text = "Hold spacebar to jump, release to land.",
                 text2 = "Press P to toggle pause.";
-            ctx.fillText(text, canvas.width / 2, 100);
-            ctx.fillText(text2, canvas.width / 2, 140);
+            ctx.fillText(controlsHints['jump'], canvas.width / 2, 100);
+            ctx.fillText(controlsHints['pause'], canvas.width / 2, 140);
             ctx.restore();
         }
 
@@ -155,7 +189,7 @@ function newGame() {
             ctx.strokeText('PAUSED', canvas.width / 2, canvas.height / 2);
             ctx.fillStyle = 'white';
             ctx.font = '24px "Open Sans"';
-            ctx.fillText("Press P to continue.", canvas.width / 2, canvas.height - 80);
+            ctx.fillText(controlsHints['unpause'], canvas.width / 2, canvas.height - 80);
             ctx.restore();
         }
 
