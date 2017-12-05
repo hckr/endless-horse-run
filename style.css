@@ -38,3 +38,7 @@ a {
 a:hover, a:focus {
     border-bottom-style: dotted;
 }
+
+#preload {
+    display: none;
+}

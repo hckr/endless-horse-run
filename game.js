@@ -32,13 +32,13 @@ function newGame() {
 
     let horse = new Horse(100, groundPosY),
         skeletons = [],
-        lastSkeletonAdded = 0,
+        lastSkeletonAdded = Date.now() + 5000;  // give some time before the first enemy to appear
         difficulty = 0;
 
     function restartGame() {
         skeletons = [];
         horse.restart();
-        lastSkeletonAdded = Date.now() + 5000; // give some time before the first enemy to appear
+        lastSkeletonAdded = Date.now();
         gameOver = false;
         difficulty = 0;
     }
@@ -152,8 +152,9 @@ function newGame() {
 
         drawGroundAndBackTrees(ctx);
 
-        for (let x of [horse, ...skeletons]) {
-            x.drawOn(ctx);
+        horse.drawOn(ctx);
+        for (let s of skeletons) {
+            s.drawOn(ctx);
         }
 
         drawForeTrees(ctx);
@@ -212,4 +213,12 @@ function newGame() {
     })();
 }
 
-newGame();
+(function checkIfLoaded() {
+    if (document.readyState === "complete") {
+        prepareBackground(canvas.width, canvas.height);
+        prepareTrees();
+        newGame();
+    } else {
+        setTimeout(checkIfLoaded, 100);
+    }
+})();

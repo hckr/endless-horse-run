@@ -3,6 +3,19 @@ backgroundImage.src = 'assets/forest.png';
 
 const groundHeight = 30;
 
+function prepareTreeDraw(spriteInfo) {
+    let canvas = document.createElement('canvas'),
+        ctx = canvas.getContext('2d');
+
+    canvas.width = Math.floor(spriteInfo.width);
+    canvas.height = Math.floor(spriteInfo.height);
+
+    ctx.drawImage(backgroundImage, spriteInfo.spriteX, spriteInfo.spriteY, spriteInfo.spriteWidth, spriteInfo.spriteHeight, 0, 0, canvas.width, canvas.height);
+
+    spriteInfo['draw'] = function(mainCtx, treeInfo) {
+        mainCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, treeInfo.left, mainCtx.canvas.height - treeInfo.bottom - canvas.height, canvas.width, canvas.height);
+    };
+}
 
 let firstForeTree = {
     spriteX: 6,
@@ -31,12 +44,9 @@ let foreTrees = [
 ];
 
 function updateForeTrees(difficulty) {
-    for (let tree of foreTrees) {
-        tree.left -= 2.5;
-    }
-    foreTrees = foreTrees.filter(t => t.left > -t.sprite.width);
+    foreTrees = foreTrees.filter(t => (t.left -= 2.5) > -t.sprite.width);
     let lastTree = foreTrees[foreTrees.length - 1];
-    if ((lastTree.left + lastTree.sprite.width) < (750 + 200 * difficulty) && Math.random() < 0.15) {
+    if (Math.random() < 0.15 && (lastTree.left + lastTree.sprite.width) < (750 + 200 * difficulty)) {
         foreTrees.push({ left: 800, bottom: -50, front: Math.random() < 0.5, sprite: Math.random() < 0.5 ? firstForeTree : secondForeTree });
     }
 }
@@ -44,10 +54,11 @@ function updateForeTrees(difficulty) {
 function drawTrees(ctx, trees) {
     let canvasWidth = ctx.canvas.width,
         canvasHeight = ctx.canvas.height;
-
-    for (let batch of [trees.filter(t => !t.front), trees.filter(t => t.front)]) {
-        for (let tree of batch) {
-            ctx.drawImage(backgroundImage, tree.sprite.spriteX, tree.sprite.spriteY, tree.sprite.spriteWidth, tree.sprite.spriteHeight, tree.left, canvasHeight - tree.bottom - tree.sprite.height, tree.sprite.width, tree.sprite.height);
+    for (let val of [false, true]) {
+        for (let tree of trees) {
+            if (tree.front == val) {
+                tree.sprite.draw(ctx, tree);
+            }
         }
     }
 }
@@ -84,58 +95,82 @@ let backTrees = [
 
 let groundOffsetX = 0;
 
-function updateGroundAndBackTrees(difficulty  ) {
+function updateGroundAndBackTrees(difficulty) {
     groundOffsetX = (groundOffsetX - 2) % 1920; // least common multiple of 128 and 30
 
-    for (let tree of backTrees) {
-        tree.left -= 1.8;
-    }
-    backTrees = backTrees.filter(t => t.left > -t.sprite.width);
+    backTrees = backTrees.filter(t => (t.left -= 1.8) > -t.sprite.width);
     let lastTree = backTrees[backTrees.length - 1];
-    if ((lastTree.left + lastTree.sprite.width) < (750 + 200 * difficulty) && Math.random() < 0.15) {
+    if (Math.random() < 0.15 && (lastTree.left + lastTree.sprite.width) < (750 + 200 * difficulty)) {
         backTrees.push({ left: 800, bottom: 30, front: Math.random() < 0.5, sprite: Math.random() < 0.5 ? firstBackTree : secondBackTree });
     }
+}
+
+function prepareTrees() {
+    prepareTreeDraw(firstForeTree);
+    prepareTreeDraw(secondForeTree);
+    prepareTreeDraw(firstBackTree);
+    prepareTreeDraw(secondBackTree);
+}
+
+function prepareBackgroundDraw(spriteInfo, canvasWidth, canvasHeight, posY) {
+    let canvas = document.createElement('canvas'),
+        ctx = canvas.getContext('2d');
+    canvas.width = canvasWidth + spriteInfo.width;
+    canvas.height = spriteInfo.height;
+
+    for (let offsetX = 0; offsetX < canvas.width; offsetX += spriteInfo.width) {
+        ctx.drawImage(backgroundImage, spriteInfo.spriteX, spriteInfo.spriteY, spriteInfo.spriteWidth, spriteInfo.spriteHeight, offsetX, 0, spriteInfo.width, spriteInfo.height);
+    }
+
+    return function(mainCtx, offsetX) {
+        mainCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, offsetX % spriteInfo.width, posY, canvas.width, canvas.height);
+    }
+}
+
+let drawBackGround, drawMiddleGround, drawFrontGround;
+function prepareBackground(canvasWidth, canvasHeight) {
+    let back = {
+            spriteX: 301,
+            spriteY: 4 ,
+            spriteWidth: 128,
+            spriteHeight: 85,
+            width: 128,
+            height: 95
+        };
+    drawBackGround = prepareBackgroundDraw(back, canvasWidth, canvasHeight,
+                            canvasHeight - groundHeight - 70 - back.height);
+
+    let middle = {
+            spriteX: 301,
+            spriteY: 94 ,
+            spriteWidth: 128,
+            spriteHeight: 85,
+            width: 128,
+            height: 85
+        };
+    drawMiddleGround = prepareBackgroundDraw(middle, canvasWidth, canvasHeight,
+                            canvasHeight - groundHeight - middle.height + 10);
+
+    let front = {
+            spriteX: 230,
+            spriteY: 54,
+            spriteWidth: 30,
+            spriteHeight: 30,
+            width: 30,
+            height: groundHeight
+        };
+    drawFrontGround = prepareBackgroundDraw(front, canvasWidth, canvasHeight,
+                                                canvasHeight - front.height);
 }
 
 function drawGroundAndBackTrees(ctx) {
     let canvasWidth = ctx.canvas.width,
         canvasHeight = ctx.canvas.height;
 
-    {
-        let spriteX = 301,
-            spriteY = 4 ,
-            spriteWidth = 128,
-            spriteHeight = 85,
-            width = 128,
-            height = 95;
+    drawBackGround(ctx, Math.ceil(groundOffsetX * 0.2));
+    drawMiddleGround(ctx, Math.ceil(groundOffsetX * 0.6));
 
-        for (let offsetX = Math.ceil((groundOffsetX * 0.2) % width); offsetX < canvasWidth; offsetX += width) {
-            ctx.drawImage(backgroundImage, spriteX, spriteY, spriteWidth, spriteHeight, offsetX, canvasHeight - groundHeight - 70 - height, width, height);
-        }
-    }
-    {
-        let spriteX = 301,
-            spriteY = 94 ,
-            spriteWidth = 128,
-            spriteHeight = 85,
-            width = 128,
-            height = 85;
-
-        for (let offsetX = Math.ceil((groundOffsetX * 0.6) % width); offsetX < canvasWidth; offsetX += width) {
-            ctx.drawImage(backgroundImage, spriteX, spriteY, spriteWidth, spriteHeight, offsetX, canvasHeight - groundHeight - height + 10, width, height);
-        }
-    }
     drawTrees(ctx, backTrees);
-    {
-        let spriteX = 230,
-            spriteY = 54,
-            spriteWidth = 30,
-            spriteHeight = 30,
-            width = 30,
-            height = groundHeight;
 
-        for (let offsetX = groundOffsetX % width; offsetX < canvasWidth; offsetX += width) {
-            ctx.drawImage(backgroundImage, spriteX, spriteY, spriteWidth, spriteHeight, offsetX, canvasHeight - height, width, height);
-        }
-    }
+    drawFrontGround(ctx, groundOffsetX);
 }
