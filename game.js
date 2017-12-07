@@ -14,7 +14,7 @@ function isTouchDevice() {
 let controlsHints = {};
 
 if (isTouchDevice()) {
-    document.getElementsByClassName('.smartphones-info')[0].style.display = 'none';
+    document.getElementsByClassName('smartphones-info')[0].style.display = 'none';
 
     controlsHints['jump'] = "Touch and hold to jump, release to land.";
     controlsHints['pause'] = "Double tap to toggle pause.";
