@@ -25,6 +25,7 @@ if (isTouchDevice()) {
 
 function newGame() {
     let gameOver = false,
+        gameWon = false,
         gamePaused = false,
         showControlsHint = true;
 
@@ -40,6 +41,7 @@ function newGame() {
         horse.restart();
         lastSkeletonAdded = Date.now();
         gameOver = false;
+        gameWon = false;
         difficulty = 0;
     }
 
@@ -51,7 +53,7 @@ function newGame() {
         }
         pressedKeys[e.keyCode] = true;
 
-        if (!gameOver) {
+        if (!gameOver && !gameWon) {
             switch (e.keyCode) {
                 case 32: // spacebar
                     horse.startJump();
@@ -68,7 +70,7 @@ function newGame() {
     let firstTouchStart = 0;
     canvas.addEventListener('touchstart', e => {
         e.preventDefault();
-        if (!gameOver) {
+        if (!gameOver && !gameWon) {
             if (Date.now() - firstTouchStart < 300) {
                 gamePaused = !gamePaused;
             } else {
@@ -108,10 +110,10 @@ function newGame() {
     }
 
     (function update() {
-        if (!gamePaused) {
+        if (!gamePaused && !gameOver && !gameWon) {
             horse.update();
             skeletons = skeletons.filter(s => s.pos_x > -100);
-            if (!gameOver) {
+            if (!gameOver && !gameWon) {
                 if (Date.now() - lastSkeletonAdded > 1700) {
                     if (Math.random() > 0.5) {
                         skeletons.push(new Skeleton(canvas.width, groundPosY));
@@ -131,12 +133,17 @@ function newGame() {
                 skeletons.forEach(s => s.stop());
                 setTimeout(restartGame, 3000);
             }
+            if (difficulty >= 1) {
+                gameWon = true;
+                horse.stop();
+                setTimeout(restartGame, 3000);
+            }
         }
         setTimeout(update, 50);
     })();
 
     (function updateBackground() {
-        if (!gameOver && !gamePaused) {
+        if (!gameOver && !gameWon && !gamePaused) {
             updateGroundAndBackTrees(difficulty);
             updateForeTrees(difficulty);
             if (difficulty < 1) {
@@ -191,6 +198,21 @@ function newGame() {
             ctx.fillStyle = 'white';
             ctx.font = '24px "Open Sans"';
             ctx.fillText(controlsHints['unpause'], canvas.width / 2, canvas.height - 80);
+            ctx.restore();
+        }
+
+        if (gameWon) {
+            ctx.save();
+            ctx.fillStyle = 'rgba(37, 255, 0, 0.1)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = 'rgb(7, 138, 7)';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.font = '64px "Open Sans"';
+            ctx.fillText('YOU WON!', canvas.width / 2, canvas.height / 2);
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = 2;
+            ctx.strokeText('YOU WON!', canvas.width / 2, canvas.height / 2);
             ctx.restore();
         }
 
