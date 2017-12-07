@@ -20,7 +20,7 @@ canvas {
     max-width: 100%;
 }
 
-.credits {
+.smartphones-info, .credits {
     text-align: center;
     margin: 10px;
     color: #81738e;

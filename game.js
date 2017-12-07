@@ -5,7 +5,7 @@ canvas.width = 800;
 canvas.height = 300;
 
 let container = document.getElementById('game-container');
-container.insertBefore(canvas, container.firstChild);
+container.insertBefore(canvas, container.children[1]);
 
 function isTouchDevice() {
     return 'ontouchstart' in window || navigator.maxTouchPoints;
@@ -14,6 +14,8 @@ function isTouchDevice() {
 let controlsHints = {};
 
 if (isTouchDevice()) {
+    document.getElementsByClassName('.smartphones-info')[0].style.display = 'none';
+
     controlsHints['jump'] = "Touch and hold to jump, release to land.";
     controlsHints['pause'] = "Double tap to toggle pause.";
     controlsHints['unpause'] = "Double tap to continue.";
