@@ -29,6 +29,7 @@ function newGame() {
     let gameOver = false,
         gameWon = false,
         gamePaused = false,
+        gameRestarting = false,
         showControlsHint = true;
 
     const groundPosY = canvas.height - groundHeight;
@@ -44,6 +45,7 @@ function newGame() {
         lastSkeletonAdded = Date.now();
         gameOver = false;
         gameWon = false;
+        gameRestarting = false;
         difficulty = 0;
     }
 
@@ -112,33 +114,34 @@ function newGame() {
     }
 
     (function update() {
-        if (!gamePaused && !gameOver && !gameWon) {
-            horse.update();
-            skeletons = skeletons.filter(s => s.pos_x > -100);
-            if (!gameOver && !gameWon) {
+        if (!gamePaused) {
+            if (gameRestarting) {
+                skeletons.forEach(s => s.update());
+            } else if (gameOver || gameWon) {
+                gameRestarting = true;
+                setTimeout(restartGame, 3000);
+            } else {
+                horse.update();
+
+                skeletons.forEach(s => {
+                    s.update();
+                    if (checkCollision(horse, s)) {
+                        gameOver = true;
+                        s.attack();
+                    }
+                });
+
+                skeletons = skeletons.filter(s => s.pos_x > -100);
                 if (Date.now() - lastSkeletonAdded > 1700) {
                     if (Math.random() > 0.5) {
                         skeletons.push(new Skeleton(canvas.width, groundPosY));
                     }
                     lastSkeletonAdded = Date.now();
                 }
-            }
-            skeletons.forEach(s => {
-                s.update();
-                if (checkCollision(horse, s)) {
-                    gameOver = true;
-                    s.attack();
-                    horse.stop();
+
+                if (difficulty >= 1) {
+                    gameWon = true;
                 }
-            });
-            if (gameOver) {
-                skeletons.forEach(s => s.stop());
-                setTimeout(restartGame, 3000);
-            }
-            if (difficulty >= 1) {
-                gameWon = true;
-                horse.stop();
-                setTimeout(restartGame, 3000);
             }
         }
         setTimeout(update, 50);
