@@ -119,6 +119,7 @@ function newGame() {
                 skeletons.forEach(s => s.update());
             } else if (gameOver || gameWon) {
                 gameRestarting = true;
+                skeletons.forEach(s => s.stop());
                 setTimeout(restartGame, 3000);
             } else {
                 horse.update();
