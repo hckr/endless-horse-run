@@ -14,6 +14,7 @@ body {
 
 #game-container {
     margin: auto;
+    text-align: center;
 }
 
 canvas {
@@ -21,7 +22,6 @@ canvas {
 }
 
 .smartphones-info, .credits, .description {
-    text-align: center;
     margin: 10px;
     color: #81738e;
 }
