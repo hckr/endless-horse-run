@@ -20,18 +20,21 @@ canvas {
     max-width: 100%;
 }
 
-.smartphones-info, .credits {
+.smartphones-info, .credits, .description {
     text-align: center;
     margin: 10px;
     color: #81738e;
 }
 
-a {
-    color: inherit;
-    text-decoration: none;
+.description {
+    text-align: left;
+    margin: 50px auto 0;
+    max-width: 80%;
 }
 
 a {
+    color: inherit;
+    text-decoration: none;
     border-bottom: 1px solid #81738e;
 }
 
