@@ -237,7 +237,7 @@ function newGame() {
             ctx.restore();
         }
 
-        requestAnimationFrame(draw);
+        setTimeout(draw, 1000/60);
     })();
 }
 
